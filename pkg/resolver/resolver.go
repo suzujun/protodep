@@ -82,7 +82,9 @@ func (s *resolver) Resolve(forceUpdate bool, cleanupCache bool) error {
 	for _, dep := range protodep.Dependencies {
 		var authProvider auth.AuthProvider
 
-		if s.conf.UseHttps {
+		if s.conf.UseSystemGit {
+			authProvider = s.sshProvider
+		} else if s.conf.UseHttps {
 			authProvider = s.httpsProvider
 		} else {
 			switch dep.Protocol {
@@ -182,6 +184,10 @@ func (s *resolver) SetSshAuthProvider(provider auth.AuthProvider) {
 func (s *resolver) initAuthProviders() error {
 	s.httpsProvider = auth.NewAuthProvider(auth.WithHTTPS(s.conf.BasicAuthUsername, s.conf.BasicAuthPassword))
 
+	if s.conf.UseSystemGit {
+		s.sshProvider = auth.NewAuthProvider(auth.WithSystemGit())
+		return nil
+	}
 	if s.conf.IdentityFile == "" && s.conf.IdentityPassword == "" {
 		s.sshProvider = auth.NewAuthProvider()
 

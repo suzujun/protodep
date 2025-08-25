@@ -14,6 +14,7 @@ const (
 	SSHAgent authMethod = "SSHAgent"
 	SSH                 = "SSH"
 	HTTPS               = "HTTPS"
+	SystemGit           = "SystemGit"
 )
 
 type authOptions struct {
@@ -48,6 +49,9 @@ type AuthProviderWithSSH struct {
 type AuthProviderWithSSHAgent struct {
 }
 
+type AuthProviderWithSystemGit struct {
+}
+
 type AuthProviderHTTPS struct {
 	username string
 	password string
@@ -73,6 +77,14 @@ func WithPemFile(pemFile, password string) AuthOption {
 	}
 }
 
+func WithSystemGit() AuthOption {
+	return &funcAuthOption{
+		f: func(options *authOptions) {
+			options.method = SystemGit
+		}
+	}
+}
+
 func NewAuthProvider(opt ...AuthOption) AuthProvider {
 	opts := authOptions{
 		method: SSHAgent,
@@ -89,6 +101,8 @@ func NewAuthProvider(opt ...AuthOption) AuthProvider {
 			pemFile:  opts.pemFile,
 			password: opts.password,
 		}
+	} else if opts.method == SystemGit {
+		authProvider = &AuthProviderWithSystemGit{}
 	} else {
 		authProvider = &AuthProviderHTTPS{
 			username: opts.username,
@@ -129,6 +143,17 @@ func (p *AuthProviderWithSSHAgent) AuthMethod() (transport.AuthMethod, error) {
 		panic(err)
 	}
 	return aa, nil
+}
+
+func (p *AuthProviderWithSystemGit) GetRepositoryURL(reponame string) string {
+	// システムのGit設定を尊重するため、プロトコルを指定しない
+	return reponame + ".git"
+}
+
+func (p *AuthProviderWithSystemGit) AuthMethod() (transport.AuthMethod, error) {
+	// システムのGit設定を尊重するため、認証情報を指定しない
+	// これにより、システムのSSH設定やGit設定が自動的に使用される
+	return nil, nil
 }
 
 func (p *AuthProviderHTTPS) GetRepositoryURL(reponame string) string {

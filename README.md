@@ -1,8 +1,6 @@
-protodep
-=======
+# protodep
 
 ![logo](./logo/web.png)
-
 
 ![GitHub Actions](https://github.com/stormcat24/protodep/actions/workflows/go.yml/badge.svg)
 [![Language](https://img.shields.io/badge/language-go-brightgreen.svg?style=flat)](https://golang.org/)
@@ -13,13 +11,11 @@ protodep
 
 Dependency tool for Protocol Buffers IDL file (.proto) vendoring tool.
 
-
 ## Motivation
 
 In building Microservices architecture, gRPC with Protocol Buffers is effective. When using gRPC, your application will depend on many remote services.
 
 If you manage proto files in a git repository, what will you do? Most remote services are managed by git and they will be versioned. We need to control which dependency service version that application uses.
-
 
 ## Install
 
@@ -33,12 +29,12 @@ $ go install -v github.com/stormcat24/protodep@v0.1.7
 
 Support as follows:
 
-* protodep_darwin_amd64.tar.gz
-* protodep_darwin_arm64.tar.gz
-* protodep_linux_386.tar.gz
-* protodep_linux_amd64.tar.gz
-* protodep_linux_arm.tar.gz
-* protodep_linux_arm64.tar.gz
+- protodep_darwin_amd64.tar.gz
+- protodep_darwin_arm64.tar.gz
+- protodep_linux_386.tar.gz
+- protodep_linux_amd64.tar.gz
+- protodep_linux_arm.tar.gz
+- protodep_linux_arm64.tar.gz
 
 ```bash
 $ wget https://github.com/stormcat24/protodep/releases/download/0.1.4/protodep_darwin_amd64.tar.gz
@@ -70,7 +66,7 @@ proto_outdir = "./proto"
   branch = "master"
   path = "helm/hapi"
   ignores = ["./release", "./rudder", "./services", "./version"]
-  
+
 # whitelist by "includes" attribute
 [[dependencies]]
   target = "github.com/protodep/catalog/hierarchy"
@@ -100,6 +96,17 @@ Even if protodep.lock exists, you can force update dependenies.
 $ protodep up -f
 ```
 
+### Available Options
+
+- `-f, --force`: Force update locked file and .proto vendors
+- `-i, --identity-file`: Set the identity file for SSH
+- `-p, --password`: Set the password for SSH
+- `-c, --cleanup`: Cleanup cache before execution
+- `-u, --use-https`: Use HTTPS to get dependencies
+- `-s, --use-system-git`: Use system Git configuration instead of custom SSH authentication
+- `--basic-auth-username`: Set the username with Basic Auth via HTTPS
+- `--basic-auth-password`: Set the password or personal access token (when 2FA is enabled) with Basic Auth via HTTPS
+
 ### [Attention] Changes from 0.1.0
 
 From protodep 0.1.0 supports ssh-agent, and this is the default.
@@ -121,13 +128,23 @@ $ protodep up --use-https
 ```
 
 And also, if Basic authentication is required, do as follows.
-If you have 2FA enabled, specify the Personal Access Token as the password. 
+If you have 2FA enabled, specify the Personal Access Token as the password.
 
 ```bash
 $ protodep up --use-https \
     --basic-auth-username=your-github-username \
     --basic-auth-password=your-github-password
 ```
+
+### Using System Git Configuration
+
+If you want to use the same authentication method as regular git commands (without requiring ssh-add), you can use the `--use-system-git` flag:
+
+```bash
+$ protodep up --use-system-git
+```
+
+This option allows protodep to use your system's Git configuration, SSH keys, and authentication settings, making it behave the same way as `git pull` or `git clone` commands.
 
 ### License
 

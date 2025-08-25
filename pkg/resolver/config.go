@@ -24,4 +24,8 @@ type Config struct {
 
 	// IdentityPassword is used if `ssh` mode is enable. Optional, only if identity file needs a passphrase.
 	IdentityPassword string
+
+	// UseSystemGit will use system Git configuration instead of custom SSH authentication.
+	// This allows protodep to use the same authentication method as regular git commands.
+	UseSystemGit bool
 }

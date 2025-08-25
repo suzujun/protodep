@@ -64,6 +64,12 @@ var upCmd = &cobra.Command{
 			logger.Info("https basic auth password = %s", strings.Repeat("x", len(basicAuthPassword))) // Do not display the password.
 		}
 
+		useSystemGit, err := cmd.Flags().GetBool("use-system-git")
+		if err != nil {
+			return err
+		}
+		logger.Info("use system git = %t", useSystemGit)
+
 		pwd, err := os.Getwd()
 		if err != nil {
 			return err
@@ -83,6 +89,7 @@ var upCmd = &cobra.Command{
 			BasicAuthPassword: basicAuthPassword,
 			IdentityFile:      identityFile,
 			IdentityPassword:  password,
+			UseSystemGit:      useSystemGit,
 		}
 
 		updateService, err := resolver.New(&conf)
@@ -102,4 +109,5 @@ func initDepCmd() {
 	upCmd.PersistentFlags().BoolP("use-https", "u", false, "use HTTPS to get dependencies.")
 	upCmd.PersistentFlags().StringP("basic-auth-username", "", "", "set the username with Basic Auth via HTTPS")
 	upCmd.PersistentFlags().StringP("basic-auth-password", "", "", "set the password or personal access token(when enabled 2FA) with Basic Auth via HTTPS")
+	upCmd.PersistentFlags().BoolP("use-system-git", "s", false, "use system Git configuration instead of custom SSH authentication")
 }
